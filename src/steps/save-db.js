@@ -42,6 +42,6 @@ export async function insertConsumption (consumptionEvent) {
             log.info("Skipping since a measurement is already saved into DB");
         }
     } catch (error) {
-        log.info(error, "insert-db");
+        log.info(error.message);
     }
 }

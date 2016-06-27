@@ -98,7 +98,15 @@ describe("Save weather events on RDS", () => {
                     measurements: [{
                         type: "activeEnergy",
                         value: 10,
-                        unitOfMeasurement: "kWh"
+                        unitOfMeasurement: "%"
+                    }, {
+                        type: "reactiveEnergy",
+                        value: 15,
+                        unitOfMeasurement: "%"
+                    }, {
+                        type: "maxPower",
+                        value: 800,
+                        unitOfMeasurement: "id"
                     }]
                 },
                 id: "consumption-01"
@@ -114,7 +122,7 @@ describe("Save weather events on RDS", () => {
     });
 
     it("Save ANZ01 consumptionEvent e2e", async () => {
-        const weatherEvent = {
+        const consumptionEvent = {
             id: "eventId",
             data: {
                 element: {
@@ -138,7 +146,7 @@ describe("Save weather events on RDS", () => {
             },
             type: "element inserted in collection readings"
         };
-        await handler(getEventFromObject(weatherEvent), context);
+        await handler(getEventFromObject(consumptionEvent), context);
 
         expect(context.succeed).to.have.been.callCount(1);
         expect(context.fail).to.have.been.callCount(0);
