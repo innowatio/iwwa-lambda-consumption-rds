@@ -12,8 +12,8 @@ export default async function pipeline(event) {
     if (!rawReading ||
         !rawReading.sensorId ||
         !rawReading.measurements ||
-        !rawReading.measurements.find(x => x.type === "activeEnergy") ||
-        !rawReading.measurements.find(x => x.type === "maxPower") ||
+        !rawReading.measurements.find(x => x.type === "activeEnergy") &&
+        !rawReading.measurements.find(x => x.type === "maxPower") &&
         !rawReading.measurements.find(x => x.type === "reactiveEnergy")
     ) {
         return null;

@@ -8,7 +8,7 @@ import {getEventFromObject} from "../mocks";
 import {handler} from "index";
 import getDb from "services/db";
 
-describe("Save weather events on RDS", () => {
+describe("Save consumptionEvent on RDS", () => {
 
     const context = {
         succeed: sinon.spy(),
@@ -27,12 +27,6 @@ describe("Save weather events on RDS", () => {
             "INSERT INTO meter (meter_code) VALUES ($1)",
             "ANZ01"
         );
-    });
-
-    beforeEach(async () => {
-        await db.query({
-            text: "DELETE FROM consumption"
-        });
     });
 
     afterEach(async () => {
@@ -71,7 +65,7 @@ describe("Save weather events on RDS", () => {
                     sensorId: "ANZ01",
                     date: new Date(),
                     measurements: [{
-                        type: "activeEnergy",
+                        type: "weather-id",
                         value: 10,
                         unitOfMeasurement: "kWh"
                     }]
@@ -98,15 +92,15 @@ describe("Save weather events on RDS", () => {
                     measurements: [{
                         type: "activeEnergy",
                         value: 10,
-                        unitOfMeasurement: "%"
+                        unitOfMeasurement: "kWh"
                     }, {
                         type: "reactiveEnergy",
                         value: 15,
-                        unitOfMeasurement: "%"
+                        unitOfMeasurement: "kVArh"
                     }, {
                         type: "maxPower",
                         value: 800,
-                        unitOfMeasurement: "id"
+                        unitOfMeasurement: "kW"
                     }]
                 },
                 id: "consumption-01"
@@ -131,15 +125,15 @@ describe("Save weather events on RDS", () => {
                     measurements: [{
                         type: "activeEnergy",
                         value: 10,
-                        unitOfMeasurement: "%"
+                        unitOfMeasurement: "kWh"
                     }, {
                         type: "reactiveEnergy",
                         value: 15,
-                        unitOfMeasurement: "%"
+                        unitOfMeasurement: "kVArh"
                     }, {
                         type: "maxPower",
                         value: 800,
-                        unitOfMeasurement: "id"
+                        unitOfMeasurement: "kW"
                     }]
                 },
                 id: "consumption-01"
@@ -151,8 +145,139 @@ describe("Save weather events on RDS", () => {
         expect(context.succeed).to.have.been.callCount(1);
         expect(context.fail).to.have.been.callCount(0);
 
-        const result = await db.rows("SELECT * from consumption");
-        expect(result.length).to.be.equal(1);
+        const result = await db.row("SELECT * from consumption");
+        const sequence = await db.row("SELECT last_value FROM consumption_id_seq");
+        const meter = await db.row(
+            "SELECT id FROM meter WHERE meter_code = $1",
+            consumptionEvent.data.element.sensorId
+        );
+
+        expect(result).to.be.deep.equal({
+            id: parseInt(sequence.last_value),
+            meter_id: parseInt(meter.id),
+            date: new Date(),
+            time: "00:00:00",
+            active_energy: "10.0000",
+            reactive_energy: "15.0000",
+            max_power: "800.0000"
+        });
+    });
+
+    it("Update ANZ01 consumptionEvent e2e", async () => {
+
+        const consumptionEvent = {
+            id: "eventId",
+            data: {
+                element: {
+                    sensorId: "ANZ01",
+                    date: new Date(),
+                    measurements: [{
+                        type: "activeEnergy",
+                        value: 12,
+                        unitOfMeasurement: "kWh"
+                    }, {
+                        type: "reactiveEnergy",
+                        value: 18,
+                        unitOfMeasurement: "kVArh"
+                    }, {
+                        type: "maxPower",
+                        value: 801,
+                        unitOfMeasurement: "kW"
+                    }]
+                },
+                id: "consumption-01"
+            },
+            type: "element inserted in collection readings"
+        };
+
+        const meter = await db.row(
+            "SELECT id FROM meter WHERE meter_code = $1",
+            consumptionEvent.data.element.sensorId
+        );
+
+        await db.query(
+            "INSERT INTO consumption (meter_id, date, time, active_energy, reactive_energy, max_power) VALUES ($1, $2, $3, $4, $5, $6)",
+            meter.id,
+            new Date(),
+            "00:00:00",
+            199,
+            199,
+            199
+        );
+
+        await handler(getEventFromObject(consumptionEvent), context);
+
+        expect(context.succeed).to.have.been.callCount(1);
+        expect(context.fail).to.have.been.callCount(0);
+
+        const result = await db.row("SELECT * from consumption");
+        const sequence = await db.row("SELECT last_value FROM consumption_id_seq");
+
+        expect(result).to.be.deep.equal({
+            id: parseInt(sequence.last_value),
+            meter_id: parseInt(meter.id),
+            date: new Date(),
+            time: "00:00:00",
+            active_energy: "12.0000",
+            reactive_energy: "18.0000",
+            max_power: "801.0000"
+        });
+    });
+
+    it("Update ANZ01 consumptionEvent e2e", async () => {
+        const consumptionEvent = {
+            id: "eventId",
+            data: {
+                element: {
+                    sensorId: "ANZ01",
+                    date: new Date(),
+                    measurements: [{
+                        type: "activeEnergy",
+                        value: 19,
+                        unitOfMeasurement: "kWh"
+                    }, {
+                        type: "maxPower",
+                        value: 805,
+                        unitOfMeasurement: "kW"
+                    }]
+                },
+                id: "consumption-01"
+            },
+            type: "element inserted in collection readings"
+        };
+
+        const meter = await db.row(
+            "SELECT id FROM meter WHERE meter_code = $1",
+            consumptionEvent.data.element.sensorId
+        );
+
+        await db.query(
+            "INSERT INTO consumption (meter_id, date, time, active_energy, reactive_energy, max_power) VALUES ($1, $2, $3, $4, $5, $6)",
+            meter.id,
+            new Date(),
+            "00:00:00",
+            199,
+            199,
+            199
+        );
+
+        await handler(getEventFromObject(consumptionEvent), context);
+
+        expect(context.succeed).to.have.been.callCount(1);
+        expect(context.fail).to.have.been.callCount(0);
+
+        const result = await db.row("SELECT * from consumption");
+        const sequence = await db.row("SELECT last_value FROM consumption_id_seq");
+
+        expect(result).to.be.deep.equal({
+            id: parseInt(sequence.last_value),
+            meter_id: parseInt(meter.id),
+            date: new Date(),
+            time: "00:00:00",
+            active_energy: "19.0000",
+            reactive_energy: "199.0000",
+            max_power: "805.0000"
+        });
     });
 
 });
