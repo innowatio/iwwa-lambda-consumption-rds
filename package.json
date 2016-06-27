@@ -1,0 +1,41 @@
+{
+  "name": "iwwa-lambda-consumption-rds",
+  "version": "1.0.0",
+  "description": "Lambda function to update consumption infos on RDS",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/innowatio/iwwa-lambda-consumption-rds.git"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.9.0",
+    "bunyan": "^1.8.1",
+    "dotenv": "^2.0.0",
+    "kinesis-router": "^1.3.0",
+    "pg-async": "^2.3.2"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.10.1",
+    "babel-core": "^6.9.0",
+    "babel-eslint": "^6.0.4",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "chai": "^3.5.0",
+    "codecov": "^1.0.1",
+    "eslint": "^2.10.2",
+    "isparta": "^4.0.0",
+    "mocha": "^2.5.3",
+    "sinon": "^1.17.4",
+    "sinon-chai": "^2.8.0"
+  },
+  "scripts": {
+    "build": "babel src -d bundle",
+    "codecov": "codecov",
+    "coverage": "NODE_PATH=src NODE_ENV=test babel-node $(npm bin)/isparta cover node_modules/mocha/bin/_mocha -- --recursive",
+    "dev": "npm test -- --watch",
+    "lint": "eslint src test",
+    "test": "NODE_PATH=src NODE_ENV=test mocha --compilers js:babel-core/register --recursive"
+  },
+  "author": "Team Wattellina <wattellina@mondora.com>",
+  "license": "Apache-2.0"
+}
