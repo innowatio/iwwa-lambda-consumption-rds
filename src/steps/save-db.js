@@ -73,6 +73,6 @@ export async function insertConsumption(consumptionEvent) {
             );
         }
     } catch (error) {
-        log.info(error.message);
+        log.info(`Sensor "${consumptionEvent.sensorId}" not found on database. Skip execution`);
     }
 }
