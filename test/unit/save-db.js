@@ -6,6 +6,7 @@ import sinon from "sinon";
 import getDb from "services/db";
 
 import {insertConsumption} from "steps/save-db";
+import {createTestDB} from "../../scripts/create-tables";
 
 describe("Save consumption into DB", () => {
 
@@ -14,12 +15,13 @@ describe("Save consumption into DB", () => {
     sinon.useFakeTimers();
 
     before(async () => {
+        await db.query(createTestDB);
         await db.query({
             text: "DELETE FROM meter"
         });
         await db.query(
-            "INSERT INTO meter (meter_code) VALUES ($1)",
-            "ANZ01"
+            "INSERT INTO meter (id, meter_code) VALUES ($1, $2)",
+            "1", "ANZ01"
         );
     });
 
@@ -68,7 +70,7 @@ describe("Save consumption into DB", () => {
             max_power: "1.0000",
             reactive_energy: "180.0000",
             id: parseInt(sequence.last_value),
-            meter_id: parseInt(meter.id),
+            meter_id: meter.id,
             date: new Date(),
             time: "00:00:00"
         }]);
@@ -103,7 +105,7 @@ describe("Save consumption into DB", () => {
             max_power: null,
             reactive_energy: "180.0000",
             id: parseInt(sequence.last_value),
-            meter_id: parseInt(meter.id),
+            meter_id: meter.id,
             date: new Date(),
             time: "00:00:00"
         }]);
@@ -138,20 +140,20 @@ describe("Save consumption into DB", () => {
             max_power: null,
             reactive_energy: "180.0000",
             id: parseInt(sequence.last_value),
-            meter_id: parseInt(meter.id),
+            meter_id: meter.id,
             date: new Date(),
             time: "00:00:00"
         }]);
 
         await insertConsumption(consumptionEvent);
         const resultSkip = await db.rows("SELECT * FROM consumption");
-        
+
         expect(resultSkip).to.deep.equal([{
             active_energy: "132.0000",
             max_power: null,
             reactive_energy: "180.0000",
             id: parseInt(sequence.last_value),
-            meter_id: parseInt(meter.id),
+            meter_id: meter.id,
             date: new Date(),
             time: "00:00:00"
         }]);
