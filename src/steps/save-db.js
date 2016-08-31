@@ -1,5 +1,3 @@
-import moment from "moment";
-
 import log from "../services/logger";
 import getDb from "../services/db";
 
@@ -7,8 +5,6 @@ export async function insertConsumption(consumptionEvent) {
     const activeEnergy = consumptionEvent.measurements.find(x => x.type == "activeEnergy");
     const reactiveEnergy = consumptionEvent.measurements.find(x => x.type == "reactiveEnergy");
     const maxPower = consumptionEvent.measurements.find(x => x.type == "maxPower");
-    const now = moment.utc(consumptionEvent.date).valueOf();
-    const normalizedDate = moment.utc(now - (now % (1000 * 60 * 5)));
 
     const db = getDb();
 
@@ -21,9 +17,9 @@ export async function insertConsumption(consumptionEvent) {
         try {
 
             const savedConsumption = await db.row(
-                "SELECT id FROM consumption WHERE meter_id = $1 AND TIME = $2",
+                "SELECT id FROM consumption WHERE meter_id = $1 AND DATETIME = $2",
                 savedSensor.id,
-                normalizedDate.format("YYYY-MM-DD HH:mm:ss")
+                consumptionEvent.date
             );
 
             log.info({
@@ -60,15 +56,14 @@ export async function insertConsumption(consumptionEvent) {
         } catch (error) {
             const params = [
                 savedSensor.id,
-                normalizedDate,
-                normalizedDate.format("YYYY-MM-DD HH:mm:ss"),
+                consumptionEvent.date,
                 activeEnergy ? activeEnergy.value : null,
                 reactiveEnergy ? reactiveEnergy.value : null,
                 maxPower ? maxPower.value : null
             ];
             log.info({params}, "insert-db");
             await db.query(
-                "INSERT INTO consumption (meter_id, date, time, active_energy, reactive_energy, max_power) VALUES ($1, $2, $3, $4, $5, $6)",
+                "INSERT INTO consumption (meter_id, datetime, active_energy, reactive_energy, max_power) VALUES ($1, $2, $3, $4, $5)",
                 ...params,
             );
         }

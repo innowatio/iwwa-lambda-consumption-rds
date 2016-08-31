@@ -71,8 +71,7 @@ describe("Save consumption into DB", () => {
             reactive_energy: "180.0000",
             id: parseInt(sequence.last_value),
             meter_id: meter.id,
-            date: new Date(),
-            time: "00:00:00"
+            datetime: new Date()
         }]);
     });
 
@@ -106,8 +105,7 @@ describe("Save consumption into DB", () => {
             reactive_energy: "180.0000",
             id: parseInt(sequence.last_value),
             meter_id: meter.id,
-            date: new Date(),
-            time: "00:00:00"
+            datetime: new Date()
         }]);
     });
 
@@ -141,8 +139,7 @@ describe("Save consumption into DB", () => {
             reactive_energy: "180.0000",
             id: parseInt(sequence.last_value),
             meter_id: meter.id,
-            date: new Date(),
-            time: "00:00:00"
+            datetime: new Date()
         }]);
 
         await insertConsumption(consumptionEvent);
@@ -154,8 +151,7 @@ describe("Save consumption into DB", () => {
             reactive_energy: "180.0000",
             id: parseInt(sequence.last_value),
             meter_id: meter.id,
-            date: new Date(),
-            time: "00:00:00"
+            datetime: new Date()
         }]);
     });
 });

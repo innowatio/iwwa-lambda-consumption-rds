@@ -9,8 +9,8 @@ export const createTestDB = `
         street_number character varying(256),
         zip_code character varying(5),
         city character varying(256),
-        user_since timestamp without time zone,
-        customer_since timestamp without time zone,
+        user_since timestamp with time zone,
+        customer_since timestamp with time zone,
         name character varying(256),
         province_id integer,
         CONSTRAINT user_app_pkey PRIMARY KEY (id)
@@ -44,8 +44,7 @@ export const createTestDB = `
     CREATE TABLE IF NOT EXISTS consumption (
         id serial NOT NULL,
         meter_id character varying(256),
-        date date,
-        "time" time without time zone,
+        datetime timestamp with time zone,
         active_energy numeric(8,4),
         reactive_energy numeric(8,4),
         max_power numeric(8,4),

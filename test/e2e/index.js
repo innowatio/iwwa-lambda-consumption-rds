@@ -46,7 +46,7 @@ describe("Save consumptionEvent on RDS", () => {
                 element: {
                     sensorId: "ANZ01",
                     source: "reading",
-                    date: new Date()
+                    date: new Date("2016-01-01T00:01:02Z")
                 },
                 id: "consumption-01"
             },
@@ -66,7 +66,7 @@ describe("Save consumptionEvent on RDS", () => {
             data: {
                 element: {
                     sensorId: "ANZ01",
-                    date: new Date(),
+                    date: new Date("2016-01-01T00:01:02Z"),
                     measurements: [{
                         type: "weather-id",
                         value: 10,
@@ -92,7 +92,7 @@ describe("Save consumptionEvent on RDS", () => {
             data: {
                 element: {
                     sensorId: "ANZ02",
-                    date: new Date(),
+                    date: new Date("2016-01-01T00:01:02Z"),
                     source: "reading",
                     measurements: [{
                         type: "activeEnergy",
@@ -126,7 +126,7 @@ describe("Save consumptionEvent on RDS", () => {
             data: {
                 element: {
                     sensorId: "ANZ02",
-                    date: new Date(),
+                    date: new Date("2016-01-01T00:01:02Z"),
                     measurements: [{
                         type: "activeEnergy",
                         value: 10,
@@ -159,7 +159,7 @@ describe("Save consumptionEvent on RDS", () => {
             data: {
                 element: {
                     sensorId: "ANZ02",
-                    date: new Date(),
+                    date: new Date("2016-01-01T00:01:02Z"),
                     source: "forecast",
                     measurements: [{
                         type: "activeEnergy",
@@ -193,7 +193,7 @@ describe("Save consumptionEvent on RDS", () => {
             data: {
                 element: {
                     sensorId: "ANZ02",
-                    date: new Date(),
+                    date: new Date("2016-01-01T00:01:02Z"),
                     measurements: [{
                         type: "activeEnergy",
                         value: 10,
@@ -226,7 +226,7 @@ describe("Save consumptionEvent on RDS", () => {
             data: {
                 element: {
                     sensorId: "ANZ01",
-                    date: new Date(),
+                    date: new Date("2016-01-01T00:01:02Z"),
                     measurements: [{
                         source: "reading",
                         type: "activeEnergy",
@@ -263,8 +263,7 @@ describe("Save consumptionEvent on RDS", () => {
         expect(result).to.be.deep.equal({
             id: parseInt(sequence.last_value),
             meter_id: meter.id,
-            date: new Date(),
-            time: "00:00:00",
+            datetime: new Date("2016-01-01T00:01:02Z"),
             active_energy: "10.0000",
             reactive_energy: "15.0000",
             max_power: "800.0000"
@@ -279,7 +278,7 @@ describe("Save consumptionEvent on RDS", () => {
                 element: {
                     sensorId: "ANZ01",
                     source: "reading",
-                    date: new Date(),
+                    date: new Date("2016-01-01T00:01:02Z"),
                     measurements: [{
                         type: "activeEnergy",
                         value: 12,
@@ -305,10 +304,9 @@ describe("Save consumptionEvent on RDS", () => {
         );
 
         await db.query(
-            "INSERT INTO consumption (meter_id, date, time, active_energy, reactive_energy, max_power) VALUES ($1, $2, $3, $4, $5, $6)",
+            "INSERT INTO consumption (meter_id, datetime, active_energy, reactive_energy, max_power) VALUES ($1, $2, $3, $4, $5)",
             meter.id,
-            new Date(),
-            "00:00:00",
+            new Date("2016-01-01T00:01:02Z"),
             199,
             199,
             199
@@ -325,8 +323,7 @@ describe("Save consumptionEvent on RDS", () => {
         expect(result).to.be.deep.equal({
             id: parseInt(sequence.last_value),
             meter_id: meter.id,
-            date: new Date(),
-            time: "00:00:00",
+            datetime: new Date("2016-01-01T00:01:02Z"),
             active_energy: "12.0000",
             reactive_energy: "18.0000",
             max_power: "801.0000"
@@ -339,7 +336,7 @@ describe("Save consumptionEvent on RDS", () => {
             data: {
                 element: {
                     sensorId: "ANZ01",
-                    date: new Date(),
+                    date: new Date("2016-01-01T00:01:02Z"),
                     measurements: [{
                         source: "reading",
                         type: "activeEnergy",
@@ -363,10 +360,9 @@ describe("Save consumptionEvent on RDS", () => {
         );
 
         await db.query(
-            "INSERT INTO consumption (meter_id, date, time, active_energy, reactive_energy, max_power) VALUES ($1, $2, $3, $4, $5, $6)",
+            "INSERT INTO consumption (meter_id, datetime, active_energy, reactive_energy, max_power) VALUES ($1, $2, $3, $4, $5)",
             meter.id,
-            new Date(),
-            "00:00:00",
+            new Date("2016-01-01T00:01:02Z"),
             199,
             199,
             199
@@ -383,8 +379,7 @@ describe("Save consumptionEvent on RDS", () => {
         expect(result).to.be.deep.equal({
             id: parseInt(sequence.last_value),
             meter_id: meter.id,
-            date: new Date(),
-            time: "00:00:00",
+            datetime: new Date("2016-01-01T00:01:02Z"),
             active_energy: "19.0000",
             reactive_energy: "199.0000",
             max_power: "805.0000"
