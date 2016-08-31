@@ -11,7 +11,7 @@ before_script:
   - psql -d travis_ci_test -c "create sequence public.meter_id_seq increment 1 minvalue 1 maxvalue 9223372036854775807;" -U postgres
   - psql -d travis_ci_test -c "create table public.meter(id integer not null default nextval('meter_id_seq'), meter_type character varying, meter_code character varying);" -U postgres
   - psql -d travis_ci_test -c "create sequence public.consumption_id_seq increment 1 minvalue 1 maxvalue 9223372036854775807;" -U postgres
-  - psql -d travis_ci_test -c "create table public.consumption(id integer not null default nextval('consumption_id_seq'), meter_id integer, time time without time zone, date date, active_energy numeric(8,4), reactive_energy numeric(8,4), max_power numeric(8,4));" -U postgres
+  - psql -d travis_ci_test -c "create table public.consumption(id integer not null default nextval('consumption_id_seq'), meter_id integer, datetime timestamp with time zone, active_energy numeric(8,4), reactive_energy numeric(8,4), max_power numeric(8,4));" -U postgres
 
 script:
   - npm run coverage
